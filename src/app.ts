@@ -7,6 +7,7 @@ import { handleInternPrompt } from "./intern_prompt_handler.ts";
 import { InternPromptService } from "./intern_prompt_service.ts";
 import { LlamaClient } from "./llm_client.ts";
 import type { AppType } from "./types.ts";
+import { createPromptsGenerator } from "./prompts.ts";
 
 const getDb = async () => {
   console.log("creating mongo client...");
@@ -20,7 +21,7 @@ export const createApp = async () => {
   const db = await getDb();
   const contextStore = new ContextStoreImpl(db.collection<Context>("context"));
 
-  const llmClient = new LlamaClient("http://localhost:11434");
+  const llmClient = new LlamaClient("http://localhost:11434", createPromptsGenerator());
   const internPromptService = new InternPromptService(llmClient, contextStore);
 
   const app = new Hono<AppType>();

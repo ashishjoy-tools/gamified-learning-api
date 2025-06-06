@@ -1,12 +1,16 @@
+import { PromptGenerator } from "./prompts.ts";
+
 export interface LLMClient {
     determineIntent: (prompt: string) => Promise<string>;
 }
 
 export class LlamaClient implements LLMClient {
     private readonly baseUrl: string;
+    private readonly promptGenerator: PromptGenerator;
     
-    constructor(baseUrl: string) {
+    constructor(baseUrl: string, promptGenerator: PromptGenerator) {
         this.baseUrl = baseUrl;
+        this.promptGenerator = promptGenerator;
     }
 
     async determineIntent(prompt: string): Promise<string> {
@@ -14,16 +18,12 @@ export class LlamaClient implements LLMClient {
             method: "POST",
             body: JSON.stringify({
                 model: "llama3.2",
-                prompt: this.createContextDeterminationPrompt(prompt),
-                stream: false
+                prompt: this.promptGenerator.generateforIntentDetection(prompt),
+                stream: false,
             })
         });
         const body = await response.json();
-
+        console.log(body);
         return JSON.parse(body.response).intent;
-    }
-
-    createContextDeterminationPrompt(originalPrompt: string): string {
-        return `Given the below prompt, determine the intent of the intern as one of the askClarification,requestExercise,submitExercise,goOffTopic,reviewPriorMaterial,expressConfusion. Respond in json, format should be intent: determined intent\r\n\n${originalPrompt}`
     }
 }
