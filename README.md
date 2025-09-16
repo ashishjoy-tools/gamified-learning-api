@@ -1,3 +1,2 @@
 # Gamified Learning API
 
-## Dummy
