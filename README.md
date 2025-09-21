@@ -1,2 +1,2 @@
-# Gamified Learning API
+# Gamified Learning 
 
